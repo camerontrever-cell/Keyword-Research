@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: keyword-research
+    runtime: docker
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: AUTH_USER
+        sync: false
+      - key: AUTH_PASS
+        sync: false
+      - key: RATE_LIMIT
+        value: "40"
+      - key: SERPAPI_KEY
+        sync: false

@@ -1,0 +1,6 @@
+history/
+exports/
+__pycache__/
+*.pyc
+keywords.xlsx
+.env

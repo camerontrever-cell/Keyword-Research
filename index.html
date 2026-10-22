@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keyword Research</title>
+<style>
+  :root{--bg:#f7f8fa;--card:#fff;--line:#e3e7ee;--ink:#16202c;--muted:#6b7a90;
+        --blue:#2563eb;--green:#0f9d58;--amber:#d98a00;--red:#dc4b3e;--purple:#6d4bd1}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:1180px;margin:0 auto;padding:26px 20px 70px}
+  h1{font-size:21px;margin:0 0 3px;letter-spacing:-.3px}
+  .sub{color:var(--muted);font-size:13.5px;margin-bottom:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;
+    box-shadow:0 1px 2px rgba(20,30,50,.04);margin-bottom:16px}
+  label{display:block;font-size:11.5px;font-weight:650;color:var(--muted);text-transform:uppercase;
+    letter-spacing:.5px;margin-bottom:5px}
+  input,textarea,select{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:9px;
+    font:inherit;font-size:14px;background:#fff;color:var(--ink)}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--blue);
+    box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+  textarea{min-height:88px;resize:vertical}
+  .grid{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:13px}
+  @media(max-width:800px){.grid{grid-template-columns:1fr}}
+  button{font:inherit;font-weight:650;border:none;border-radius:9px;padding:10px 18px;
+    background:var(--blue);color:#fff;cursor:pointer}
+  button:hover{filter:brightness(1.07)}
+  button.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  button.ghost:hover{border-color:var(--blue);color:var(--blue)}
+  button.sm{padding:6px 11px;font-size:12.5px}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+  .spacer{flex:1}
+  .hint{font-size:12.5px;color:var(--muted)}
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:16px}
+  @media(max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px}
+  .kpi b{display:block;font-size:21px;letter-spacing:-.5px}
+  .kpi span{font-size:11.5px;color:var(--muted)}
+  .tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+  .tab{padding:7px 13px;border-radius:99px;font-size:13.5px;font-weight:600;cursor:pointer;
+    border:1px solid var(--line);background:#fff;color:var(--muted)}
+  .tab.on{background:var(--ink);border-color:var(--ink);color:#fff}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);
+    padding:8px 9px;border-bottom:1px solid var(--line);cursor:pointer;user-select:none;
+    position:sticky;top:0;background:#fff;z-index:2;white-space:nowrap}
+  th:hover{color:var(--blue)}
+  td{padding:8px 9px;border-bottom:1px solid #eef1f6;vertical-align:top}
+  tr:hover td{background:#f8fAff}
+  .scroll{max-height:600px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+  .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .kw{font-weight:550}
+  .kw a{color:inherit;text-decoration:none;border-bottom:1px dashed #c9d3e3}
+  .kw a:hover{color:var(--blue);border-color:var(--blue)}
+  .pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:650}
+  .buy{background:#e8f5ee;color:#0b7a44}
+  .compare{background:#e8effd;color:#1d4ed8}
+  .local{background:#fff3e0;color:#a35f00}
+  .learn{background:#f0edfa;color:#5b46b8}
+  .lv-easy{background:#e8f5ee;color:#0b7a44}
+  .lv-medium{background:#fff3e0;color:#a35f00}
+  .lv-hard{background:#fdeeec;color:#a32b1c}
+  .lv-unknown{background:#f1f3f7;color:#8493a8}
+  .bar{display:inline-block;height:7px;border-radius:99px;background:#e7ebf2;width:54px;
+    vertical-align:middle;overflow:hidden;margin-right:6px}
+  .bar>i{display:block;height:100%;border-radius:99px;background:var(--blue)}
+  .hi>i{background:var(--green)} .mid>i{background:var(--amber)}
+  .empty{color:var(--muted);padding:28px;text-align:center;font-size:14px}
+  .note{background:#f2f6ff;border:1px solid #d8e3ff;border-radius:10px;padding:11px 14px;
+    font-size:12.8px;color:#2b3d5c;margin-top:13px}
+  .err{background:#fdeeec;border-color:#f6cdc7;color:#8f2b1f}
+  .tag{font-size:10.5px;color:var(--muted);border:1px solid var(--line);border-radius:5px;
+    padding:1px 6px;margin-left:5px}
+  .spin{width:14px;height:14px;border:2px solid #ffffff66;border-top-color:#fff;border-radius:50%;
+    display:inline-block;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:6px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);
+    border-radius:8px;padding:6px 10px;font-size:12.5px;background:#fff;cursor:pointer;user-select:none}
+  .chip input{width:auto;margin:0}
+  .chip.on{border-color:var(--blue);color:var(--blue);background:#f2f6ff}
+  footer{color:var(--muted);font-size:12.5px;margin-top:24px;line-height:1.7}
+  .brief{border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:12px}
+  .brief h4{margin:0 0 2px;font-size:14.5px}
+  .brief .t{font-size:13px;color:#2b3d5c;margin:7px 0 2px}
+  .brief ol,.brief ul{margin:6px 0 0;padding-left:20px;font-size:13px;color:#3c4a5e}
+  .topic{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid #eef1f6}
+  .topic:last-child{border-bottom:none}
+  .topic .n{width:34px;height:34px;border-radius:9px;background:#eef3ff;color:var(--blue);
+    display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+  .copy{background:#fff;border:1px solid var(--line);border-radius:7px;padding:3px 8px;
+    font-size:11.5px;cursor:pointer;color:var(--muted)}
+  .copy:hover{color:var(--blue);border-color:var(--blue)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="row" style="align-items:flex-start">
+    <div>
+      <h1>Keyword Research</h1>
+      <div class="sub">Type what you sell. It searches Google, YouTube and Bing live and
+        returns the keywords people actually use.</div>
+    </div>
+    <div class="spacer"></div>
+    <div style="min-width:210px">
+      <label>Past searches</label>
+      <select id="history" onchange="loadHistory(this.value)">
+        <option value="">— this session —</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="note" style="margin-top:0;margin-bottom:14px">
+    <b>How to use it:</b> type the products or services you sell (one per line), add your city
+    if you serve one locally, and press <b>Find keywords</b>. It asks Google, YouTube and Bing
+    what people actually search, then scores each keyword for demand, difficulty and
+    opportunity. Everything exports to Excel. New here? Press <b>Try an example</b>.
+  </div>
+
+  <div class="card">
+    <div class="grid">
+      <div>
+        <label>What do you sell? (one per line, max 4)</label>
+        <textarea id="seeds" placeholder="dental implant&#10;clear aligners&#10;root canal"></textarea>
+      </div>
+      <div>
+        <label>City / area</label>
+        <input id="city" placeholder="Jodhpur">
+        <div class="hint" style="margin-top:5px">Empty = national</div>
+        <label style="margin-top:11px">Market</label>
+        <select id="market">
+          <option value="in">India (English)</option>
+          <option value="in_hi">India (Hindi suggestions)</option>
+          <option value="us">United States</option>
+          <option value="uk">United Kingdom</option>
+          <option value="ae">UAE</option>
+          <option value="au">Australia</option>
+          <option value="ca">Canada</option>
+          <option value="global">Global</option>
+        </select>
+      </div>
+      <div>
+        <label>Depth</label>
+        <select id="deep">
+          <option value="1">Thorough (recommended)</option>
+          <option value="0">Fast</option>
+        </select>
+        <label style="margin-top:11px">Also check difficulty?</label>
+        <select id="wantDiff">
+          <option value="1">Yes, top 20 keywords</option>
+          <option value="0">No, just keywords</option>
+        </select>
+      </div>
+    </div>
+    <div class="row" style="margin-top:15px">
+      <button id="go" onclick="run()">Find keywords</button>
+      <button class="ghost" onclick="runExample()">Try an example</button>
+      <span class="hint" id="status"></span>
+    </div>
+    <div id="error"></div>
+  </div>
+
+  <div id="results" style="display:none">
+    <div class="kpis" id="kpis"></div>
+
+    <div class="tabs" id="tabs">
+      <div class="tab on" data-t="kw">Best keywords</div>
+      <div class="tab" data-t="topics">Topics</div>
+      <div class="tab" data-t="briefs">Content briefs</div>
+      <div class="tab" data-t="q">Questions</div>
+      <div class="tab" data-t="loc">Local</div>
+      <div class="tab" data-t="comp">Competitors</div>
+    </div>
+
+    <!-- KEYWORDS -->
+    <div class="card" id="pane-kw">
+      <div class="row" style="margin-bottom:10px">
+        <input id="filter" placeholder="Filter keywords…" style="max-width:230px" oninput="renderKW()">
+        <select id="intentF" onchange="renderKW()" style="max-width:150px">
+          <option value="">All intents</option>
+          <option value="buy">buy</option><option value="compare">compare</option>
+          <option value="local">local</option><option value="learn">learn</option>
+        </select>
+        <select id="levelF" onchange="renderKW()" style="max-width:160px">
+          <option value="">Any difficulty</option>
+          <option value="easy">easy only</option>
+          <option value="medium">medium</option>
+          <option value="hard">hard</option>
+          <option value="unknown">not checked</option>
+        </select>
+        <label class="chip" id="chipBrands"><input type="checkbox" onchange="renderKW()">Hide brand terms</label>
+        <label class="chip" id="chipJunk"><input type="checkbox" checked onchange="renderKW()">Hide junk</label>
+      </div>
+      <div class="row" style="margin-bottom:12px">
+        <button class="ghost sm" onclick="checkDifficulty(false)">Check difficulty</button>
+        <button class="ghost sm" onclick="checkDifficulty(true)">Check next 20</button>
+        <span class="hint" id="diffStatus"></span>
+        <div class="spacer"></div>
+        <button class="ghost sm" onclick="dl('xlsx')">Excel</button>
+        <button class="ghost sm" onclick="dl('csv')">CSV</button>
+        <button class="ghost sm" id="selBtn" onclick="exportSelected()" disabled>Export selected (0)</button>
+      </div>
+      <div id="kwTable"></div>
+      <div class="note" id="howNote"></div>
+    </div>
+
+    <!-- TOPICS -->
+    <div class="card" id="pane-topics" style="display:none"><div id="topicsBody"></div></div>
+
+    <!-- BRIEFS -->
+    <div class="card" id="pane-briefs" style="display:none">
+      <div class="row" style="margin-bottom:12px">
+        <button onclick="makeBriefs()">Create briefs for top 15</button>
+        <span class="hint" id="briefStatus"></span>
+      </div>
+      <div id="briefsBody"><div class="empty">Briefs are written from your top keywords by
+        opportunity — title, H1, meta, outline and the questions to answer.</div></div>
+    </div>
+
+    <!-- QUESTIONS -->
+    <div class="card" id="pane-q" style="display:none"><div id="qTable"></div></div>
+
+    <!-- LOCAL -->
+    <div class="card" id="pane-loc" style="display:none"><div id="locTable"></div></div>
+
+    <!-- COMPETITORS -->
+    <div class="card" id="pane-comp" style="display:none">
+      <div class="row" style="margin-bottom:12px">
+        <input id="compDomain" placeholder="competitor domain, e.g. clinicx.in" style="max-width:320px">
+        <button onclick="mineCompetitor()">See their keywords</button>
+        <span class="hint" id="compStatus"></span>
+      </div>
+      <div id="compMined"></div>
+      <div id="compTable" style="margin-top:16px"></div>
+    </div>
+  </div>
+
+  <footer>
+    Demand = live autocomplete popularity (0–100), never invented volume. Difficulty = live SERP
+    analysis of who ranks. Opportunity = demand you can actually capture. If a SERP can't be
+    fetched from your network, that keyword shows "not checked" instead of a made-up score.
+  </footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let DATA = null, sortKey = 'opportunity', sortDir = -1, SELECTED = new Set();
+const JUNK = ['free','pdf','download','job','jobs','salary','course','courses','torrent',
+  'login','apk','whatsapp','customer care','complaint','wikipedia','quora','reddit',
+  'meaning in hindi','full form','quotes','wallpaper'];
+let BRANDS = ['practo','justdial','amazon','flipkart','sulekha','lybrate','1mg','urbancompany'];
+
+const esc = s => String(s ?? '').replace(/[&<>"]/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
+  ['kw','topics','briefs','q','loc','comp'].forEach(k =>
+    $('pane-' + k).style.display = (k === t.dataset.t) ? '' : 'none');
+});
+
+/* ---------------- run ---------------- */
+async function run(){
+  const seeds = $('seeds').value.split('\n').map(s => s.trim()).filter(Boolean);
+  if(!seeds.length) return showErr('Tell me what you sell — one service or product per line.');
+  $('go').disabled = true; $('error').innerHTML = ''; SELECTED.clear(); updateSelBtn();
+  $('status').innerHTML = '<span class="spin"></span>Searching Google, YouTube and Bing…';
+  try{
+    const r = await fetch('/api/research', {method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({seeds, city: $('city').value.trim(),
+        market: $('market').value, deep: $('deep').value === '1'})});
+    const d = await r.json();
+    if(!d.ok) throw new Error(d.error || 'Research failed');
+    DATA = d; DATA.briefs = null;
+    $('status').textContent = `Found ${d.meta.keywords_found} keywords in ${d.meta.seconds}s`
+      + (d.cached ? ' (cached — instant)' : '');
+    paint(); loadHistoryList();
+    if($('wantDiff').value === '1') await checkDifficulty(false);
+  }catch(e){ showErr(e.message); $('status').textContent=''; }
+  finally{ $('go').disabled = false; }
+}
+function showErr(m){ $('error').innerHTML = `<div class="note err">${esc(m)}</div>`; }
+
+function runExample(){
+  $('seeds').value = 'dental implant\nclear aligners';
+  $('city').value = 'Jodhpur';
+  $('market').value = 'in';
+  run();
+}
+
+/* ---------------- paint ---------------- */
+function paint(){
+  const m = DATA.meta;
+  $('results').style.display = '';
+  const checked = DATA.keywords.filter(k => k.difficulty != null).length;
+  $('kpis').innerHTML = [
+    [m.keywords_found, 'keywords found'],
+    [DATA.questions.length, 'questions'],
+    [DATA.local_targets.length, 'local targets'],
+    [checked, 'difficulty checked'],
+    [(DATA.competitors||[]).length, 'competitors ranking'],
+  ].map(([v,l]) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`).join('');
+  renderKW(); renderTopics(); renderQ(); renderLoc(); renderComp();
+  $('howNote').innerHTML =
+    `<b>${m.keywords_found}</b> keywords from <b>${m.queries_run}</b> live searches in
+     ${m.seconds}s. Demand = how many searches returned it and how high Google ranked it.
+     ${m.dropped_foreign ? `${m.dropped_foreign} foreign-city variants removed.` : ''}`;
+}
+
+const demandCell = v => (v == null) ? '<span class="hint">—</span>'
+  : `<span class="bar ${v>=70?'hi':v>=45?'mid':''}"><i style="width:${Math.min(100,v)}%"></i></span>${v}`;
+const diffCell = r => (r.difficulty == null)
+  ? '<span class="pill lv-unknown">not checked</span>'
+  : `<span class="pill lv-${esc(r.level)}" title="${esc((r.difficulty_reasons||[]).join(' • '))}">${esc(r.level)} ${r.difficulty}</span>`;
+
+function visibleRows(){
+  const q = ($('filter').value||'').toLowerCase().trim();
+  const f = $('intentF').value, lv = $('levelF').value;
+  const hideBrands = $('chipBrands').querySelector('input').checked;
+  const hideJunk = $('chipJunk').querySelector('input').checked;
+  $('chipBrands').classList.toggle('on', hideBrands);
+  $('chipJunk').classList.toggle('on', hideJunk);
+  return DATA.keywords.filter(r => {
+    if(q && !r.keyword.includes(q)) return false;
+    if(f && r.intent !== f) return false;
+    if(lv === 'unknown' && r.difficulty != null) return false;
+    if(lv && lv !== 'unknown' && r.level !== lv) return false;
+    if(hideJunk && JUNK.some(j => r.keyword.includes(j))) return false;
+    if(hideBrands && BRANDS.some(b => r.keyword.includes(b))) return false;
+    return true;
+  });
+}
+
+function renderKW(){
+  let rows = visibleRows().slice().sort((a,b) => {
+    let A = a[sortKey], B = b[sortKey];
+    if(A == null) A = -1; if(B == null) B = -1;
+    return (A > B ? 1 : A < B ? -1 : 0) * sortDir;
+  });
+  const head = [['sel',''],['keyword','Keyword'],['demand','Demand'],
+                ['opportunity','Opportunity'],['level','Difficulty'],['intent','Intent'],
+                ['evidence','Evidence'],['sources','Found in']];
+  $('kwTable').innerHTML = `<div class="scroll"><table>
+    <thead><tr>${head.map(([k,l]) => k === 'sel'
+      ? `<th><input type="checkbox" onchange="toggleAll(this.checked)" style="width:auto"></th>`
+      : `<th onclick="sortBy('${k}')">${l}${sortKey===k?(sortDir<0?' ↓':' ↑'):''}</th>`).join('')}
+    </tr></thead><tbody>${rows.slice(0,600).map(r => `<tr>
+      <td><input type="checkbox" style="width:auto" ${SELECTED.has(r.keyword)?'checked':''}
+        onchange="toggleOne('${esc(r.keyword).replace(/'/g,"\\'")}',this.checked)"></td>
+      <td class="kw"><a href="https://www.google.com/search?q=${encodeURIComponent(r.keyword)}"
+        target="_blank" rel="noopener">${esc(r.keyword)}</a>
+        ${r.serp_hit ? '<span class="tag">ranks now</span>' : ''}</td>
+      <td class="num">${demandCell(r.demand)}</td>
+      <td class="num">${r.opportunity != null ? `<b>${r.opportunity}</b>` : '<span class="hint">—</span>'}</td>
+      <td>${diffCell(r)}</td>
+      <td><span class="pill ${esc(r.intent)}">${esc(r.intent)}</span></td>
+      <td class="num">${r.evidence}</td>
+      <td class="hint">${esc(r.sources.join(', '))}</td>
+    </tr>`).join('')}</tbody></table></div>
+    ${rows.length > 600 ? '<div class="hint" style="margin-top:7px">Showing 600 — export for all.</div>' : ''}`;
+  updateSelBtn();
+}
+function sortBy(k){
+  if(sortKey === k) sortDir *= -1;
+  else { sortKey = k; sortDir = (k === 'keyword' || k === 'intent') ? 1 : -1; }
+  renderKW();
+}
+function toggleOne(kw, on){ on ? SELECTED.add(kw) : SELECTED.delete(kw); updateSelBtn(); }
+function toggleAll(on){
+  const rows = visibleRows().slice(0,600);
+  rows.forEach(r => on ? SELECTED.add(r.keyword) : SELECTED.delete(r.keyword));
+  renderKW();
+}
+function updateSelBtn(){
+  const b = $('selBtn');
+  b.textContent = `Export selected (${SELECTED.size})`;
+  b.disabled = SELECTED.size === 0;
+}
+async function exportSelected(){
+  const r = await fetch('/api/export-selected.csv', {method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({keywords:[...SELECTED]})});
+  const blob = await r.blob();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'selected-keywords.csv'; a.click();
+}
+
+/* ---------------- difficulty ---------------- */
+async function checkDifficulty(next){
+  if(!DATA) return;
+  const done = new Set(DATA.keywords.filter(k => k.difficulty != null).map(k => k.keyword));
+  let todo = DATA.keywords.filter(k => !done.has(k.keyword))
+                 .sort((a,b) => b.demand - a.demand).slice(0, 20).map(k => k.keyword);
+  if(!todo.length){ $('diffStatus').textContent = 'All checked.'; return; }
+  $('diffStatus').innerHTML = `<span class="spin" style="border-top-color:#2563eb"></span>
+    checking ${todo.length} SERPs…`;
+  try{
+    const r = await fetch('/api/difficulty', {method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({keywords: todo})});
+    const d = await r.json();
+    let hit = 0;
+    DATA.keywords.forEach(k => {
+      const v = d.results[k.keyword];
+      if(v && v.difficulty != null){
+        k.difficulty = v.difficulty; k.level = v.level;
+        k.difficulty_reasons = v.reasons; k.serp_top = v.top;
+        k.opportunity = Math.round(0.62*k.demand + 0.38*(100 - v.difficulty));
+        hit++;
+      }
+    });
+    $('diffStatus').textContent = hit
+      ? `${hit} checked, ${todo.length - hit} could not be fetched`
+      : 'No SERPs could be fetched — network is blocking search right now. Try again.';
+    paint(); renderTopics();
+  }catch(e){ $('diffStatus').textContent = 'Difficulty check failed.'; }
+}
+
+/* ---------------- topics ---------------- */
+function renderTopics(){
+  const groups = {};
+  DATA.keywords.forEach(r => {
+    const t = r.seed || 'other';
+    (groups[t] = groups[t] || []).push(r);
+  });
+  const list = Object.entries(groups).map(([t, rows]) => {
+    rows.sort((a,b) => (b.opportunity ?? b.demand) - (a.opportunity ?? a.demand));
+    const scored = rows.filter(r => r.opportunity != null);
+    return {t, rows, best: scored.length ? Math.max(...scored.map(r => r.opportunity)) : null,
+      avgDiff: scored.length ? Math.round(scored.reduce((s,r)=>s+r.difficulty,0)/scored.length) : null};
+  }).sort((a,b) => b.rows.length - a.rows.length);
+
+  $('topicsBody').innerHTML = list.map(g => `
+    <div class="topic">
+      <div class="n">${g.rows.length}</div>
+      <div style="flex:1">
+        <div style="font-weight:650;text-transform:capitalize">${esc(g.t)}</div>
+        <div class="hint">${g.rows.filter(r=>r.intent==='buy').length} buy ·
+          ${g.rows.filter(r=>r.intent==='local').length} local ·
+          ${g.rows.filter(r=>r.intent==='learn').length} learn
+          ${g.best!=null?` · best opportunity ${g.best}`:''}
+          ${g.avgDiff!=null?` · avg difficulty ${g.avgDiff}`:''}</div>
+        <div class="hint" style="margin-top:4px">${g.rows.slice(0,6).map(r=>esc(r.keyword)).join(' · ')}</div>
+      </div>
+    </div>`).join('') || '<div class="empty">No topics.</div>';
+}
+
+/* ---------------- briefs ---------------- */
+async function makeBriefs(){
+  if(!DATA) return;
+  $('briefStatus').innerHTML = '<span class="spin" style="border-top-color:#2563eb"></span> writing…';
+  const r = await fetch('/api/briefs', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({count: 15})});
+  const d = await r.json();
+  if(!d.ok){ $('briefStatus').textContent = d.error || 'failed'; return; }
+  DATA.briefs = d.briefs;
+  $('briefStatus').textContent = `${d.briefs.length} briefs ready — also in the Excel export`;
+  renderBriefs();
+}
+function renderBriefs(){
+  if(!DATA.briefs) return;
+  $('briefsBody').innerHTML = DATA.briefs.map((b,i) => `
+    <div class="brief">
+      <div class="row">
+        <h4>${esc(b.keyword)}</h4>
+        <span class="pill ${esc(b.intent)}">${esc(b.intent)}</span>
+        <span class="spacer"></span>
+        <button class="copy" onclick="copyText(${i},'title')">copy title</button>
+        <button class="copy" onclick="copyText(${i},'outline')">copy outline</button>
+      </div>
+      <div class="hint">demand ${b.demand ?? '—'} ·
+        difficulty ${b.difficulty ?? '—'} · opportunity ${b.opportunity ?? '—'} ·
+        target ~${b.word_count_target} words</div>
+      <div class="t"><b>Title:</b> ${esc(b.seo_title)} <span class="hint">(${b.seo_title.length} chars)</span></div>
+      <div class="t"><b>H1:</b> ${esc(b.h1)}</div>
+      <div class="t"><b>URL:</b> <code>${esc(b.url_slug)}</code></div>
+      <div class="t"><b>Meta:</b> ${esc(b.meta_description)}</div>
+      <div class="t"><b>Outline:</b></div>
+      <ol>${b.outline.map(s => `<li>${esc(s)}</li>`).join('')}</ol>
+      ${b.questions_to_answer.length ? `<div class="t"><b>Questions to answer:</b></div>
+        <ul>${b.questions_to_answer.map(q => `<li>${esc(q)}</li>`).join('')}</ul>` : ''}
+    </div>`).join('');
+}
+function copyText(i, which){
+  const b = DATA.briefs[i];
+  const txt = which === 'title' ? b.seo_title
+    : b.outline.map((s,n) => `${n+1}. ${s}`).join('\n');
+  navigator.clipboard.writeText(txt);
+}
+
+/* ---------------- questions / local / competitors ---------------- */
+function renderQ(){
+  const rows = DATA.questions;
+  $('qTable').innerHTML = rows.length ? `<div class="scroll"><table>
+    <thead><tr><th>Question people type</th><th class="num">Demand</th>
+    <th>Open</th></tr></thead><tbody>
+    ${rows.map(r => `<tr><td class="kw">${esc(r.keyword)}</td>
+      <td class="num">${demandCell(r.demand)}</td>
+      <td><a class="hint" target="_blank" rel="noopener"
+        href="https://www.google.com/search?q=${encodeURIComponent(r.keyword)}">SERP ↗</a></td>
+    </tr>`).join('')}</tbody></table></div>`
+    : '<div class="empty">No question-style keywords came back.</div>';
+}
+
+function renderLoc(){
+  const t = DATA.local_targets || [], found = DATA.local || [];
+  $('locTable').innerHTML = `
+    ${t.length ? `<h3 style="font-size:14px;margin:0 0 9px">Pages to own for
+      ${esc(DATA.meta.city)}</h3>
+      <table><thead><tr><th>Keyword</th><th class="num">Demand</th><th>Status</th></tr></thead>
+      <tbody>${t.map(r => `<tr><td class="kw">${esc(r.keyword)}</td>
+        <td class="num">${demandCell(r.demand)}</td>
+        <td><span class="tag">${esc(r.source)}</span></td></tr>`).join('')}</tbody></table>` : ''}
+    ${found.length ? `<h3 style="font-size:14px;margin:20px 0 9px">City / near-me keywords found live</h3>
+      <div class="scroll"><table><thead><tr><th>Keyword</th><th class="num">Demand</th>
+      <th class="num">Evidence</th></tr></thead><tbody>
+      ${found.map(r => `<tr><td class="kw">${esc(r.keyword)}</td>
+        <td class="num">${demandCell(r.demand)}</td><td class="num">${r.evidence}</td></tr>`).join('')}
+      </tbody></table></div>` : ''}
+    ${(!t.length && !found.length) ? '<div class="empty">Add a city to get local keywords.</div>' : ''}`;
+}
+
+async function mineCompetitor(){
+  const domain = $('compDomain').value.trim();
+  if(!domain) return;
+  $('compStatus').innerHTML = '<span class="spin" style="border-top-color:#2563eb"></span> reading their sitemap…';
+  const r = await fetch('/api/competitor', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({domain})});
+  const d = await r.json();
+  if(!d.ok){ $('compStatus').textContent = d.error || 'could not read that site'; return; }
+  $('compStatus').textContent =
+    `${d.pages_found} pages · ${d.keywords.length} keyword targets · ${d.gaps.length} you missed`;
+  const brand = d.domain.split('.')[0].replace(/-/g,' ');
+  if(!BRANDS.includes(brand)) BRANDS.push(brand);
+  $('compMined').innerHTML = `
+    <div class="note"><b>${esc(d.domain)}</b> targets these phrases in their URLs and titles.
+      ${d.gaps.length} of them are missing from your list — those are your gaps.</div>
+    <div class="scroll" style="max-height:340px;margin-top:10px"><table>
+      <thead><tr><th>Their keyword</th><th>Status</th><th>Page</th></tr></thead><tbody>
+      ${d.keywords.slice(0,80).map(k => {
+        const gap = d.gaps.some(g => g.keyword === k.keyword);
+        return `<tr><td class="kw">${esc(k.keyword)}</td>
+          <td>${gap ? '<span class="pill lv-hard">gap</span>' : '<span class="pill lv-easy">also yours</span>'}</td>
+          <td class="hint"><a href="${esc(k.url)}" target="_blank" rel="noopener">${esc((k.title||k.url).slice(0,70))}</a></td></tr>`;
+      }).join('')}</tbody></table></div>`;
+  renderKW();
+}
+
+function renderComp(){
+  const rows = DATA.competitors || [], serp = DATA.seeds_detail || [];
+  $('compTable').innerHTML = `
+    ${serp.map(s => `<h3 style="font-size:14px;margin:8px 0">Bing top results for
+      “${esc(s.seed)}”</h3><table><tbody>${s.results.map((x,i) => `<tr>
+        <td class="num" style="width:26px">${i+1}</td>
+        <td><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title.slice(0,85))}</a>
+        <div class="hint">${esc(x.domain)}</div></td></tr>`).join('')}</tbody></table>`).join('')
+      || '<div class="empty">No live results captured.</div>'}`;
+}
+
+/* ---------------- history / export ---------------- */
+async function loadHistoryList(){
+  const r = await fetch('/api/history');
+  const d = await r.json();
+  $('history').innerHTML = '<option value="">— this session —</option>' +
+    (d.items||[]).map(i => `<option value="${i.id}">${esc(i.label)} · ${i.keywords} kw · ${esc(i.when)}</option>`).join('');
+}
+async function loadHistory(id){
+  if(!id) return;
+  const r = await fetch('/api/history/load?id=' + encodeURIComponent(id));
+  const d = await r.json();
+  if(!d.ok) return;
+  DATA = {meta:d.meta, keywords:d.keywords, questions:d.questions, local:d.local,
+          local_targets:d.local_targets, competitors:d.competitors,
+          seeds_detail:d.seeds_detail, briefs:d.briefs};
+  $('seeds').value = (d.meta.seeds||[]).join('\n');
+  $('city').value = d.meta.city || '';
+  SELECTED.clear(); paint();
+  if(DATA.briefs) renderBriefs();
+  $('status').textContent = 'Loaded from history';
+}
+function dl(kind){ if(DATA){ const a=document.createElement('a'); a.href='/api/export.'+kind; a.click(); } }
+
+/* ---------------- boot ---------------- */
+loadHistoryList();
+</script>
+</body>
+</html>

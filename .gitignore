@@ -1,0 +1,11 @@
+# runtime state — never commit
+history/
+exports/
+*.xlsx
+__pycache__/
+*.pyc
+.env
+
+# OS noise
+.DS_Store
+Thumbs.db
